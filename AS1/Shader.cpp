@@ -28,6 +28,11 @@ void ShaderProgram::use()
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
+GLint ShaderProgram::GetUniformLocation(const char* name)
+{
+    return glGetUniformLocation(program, name);
+}
+
 GLuint CreateShader(GLenum eShaderType, std::istream &t)
 {
     //read the stream into a string

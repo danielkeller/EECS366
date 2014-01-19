@@ -18,6 +18,9 @@ public:
     //Enable this program for rendering
     void use();
 
+    //get a uniform
+    GLint GetUniformLocation(const char* name);
+
 private:
     //the actual GL program reference
     GLuint program;

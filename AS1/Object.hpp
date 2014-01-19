@@ -3,6 +3,9 @@
 
 #include "GL/gl_core_3_3.h"
 #include <vector>
+#include <memory>
+
+class ShaderProgram;
 
 class Object
 {
@@ -29,6 +32,9 @@ private:
 
     //how many vertex indices we have
     GLsizei numVertecies;
+
+    //our shader program
+    std::shared_ptr<ShaderProgram> program;
 
     //real initialization work
     void init(const std::vector<GLfloat>& verts, const std::vector<GLint>& indices);

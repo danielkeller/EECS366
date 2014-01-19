@@ -1,4 +1,3 @@
-#include "Shader.hpp"
 #include "Object.hpp"
 #include "Window.hpp"
 
@@ -21,9 +20,6 @@ try
     //add our keyboard input callback
     glfwSetKeyCallback(w.window, key_callback);
 
-    //load the shader
-    ShaderProgram prgm("simple.vert", "simple.frag");
-
     //load the object
     Object obj("teapot.obj");
 
@@ -42,7 +38,6 @@ try
         glClear(GL_COLOR_BUFFER_BIT);
 
         //draw the object
-        prgm.use();
         obj.draw();
 
         //swap draw buffer and visible buffer

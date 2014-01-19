@@ -1,4 +1,5 @@
 #include "Object.hpp"
+#include "Shader.hpp"
 
 #define GLM_FORCE_RADIANS
 #include "glm/glm.hpp"
@@ -19,13 +20,18 @@ const GLint boxIndices[] = {
     0, 1, 2, 1, 2, 3
 };
 
+std::shared_ptr<ShaderProgram> getDefaultShader();
+
 Object::Object()
+    : program(getDefaultShader())
 {
+    //use default box
     init(std::vector<GLfloat>(std::begin(boxPositions), std::end(boxPositions)),
         std::vector<GLint>(std::begin(boxIndices), std::end(boxIndices)));
 }
 
 Object::Object(const char* filename)
+    : program(getDefaultShader())
 {
     std::ifstream obj(filename);
     std::vector<GLfloat> verts;
@@ -115,20 +121,30 @@ void Object::draw()
     //make the objects VAO current. this brings in all the associated data.
     glBindVertexArray(vertexArrayObject);
 
-    //find out what the current program is
-    GLint program;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+    //set our shader current
+    program->use();
 
     //find the uniform variable called modelView
-    GLint mvUnif = glGetUniformLocation(program, "modelView");
+    GLint mvUnif = program->GetUniformLocation("modelView");
 
     //set it to a scaling matrix
     glm::mat4 sc = glm::perspective(glm::half_pi<float>(), 1.f, .01f, 1000.f)
                 * glm::translate(glm::vec3(0.f, 0.f, -5.f));
-
     glUniformMatrix4fv(mvUnif, 1, GL_FALSE, glm::value_ptr(sc));
 
     //draw verteces according to the index and position buffer objects
     //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.
     glDrawElements(GL_TRIANGLES, numVertecies, GL_UNSIGNED_INT, static_cast<GLvoid*>(0));
+}
+
+//a shared singleton. The object exists while there is at least one user.
+std::weak_ptr<ShaderProgram> defaultShader;
+std::shared_ptr<ShaderProgram> getDefaultShader()
+{
+    std::shared_ptr<ShaderProgram> ret = defaultShader.lock();
+
+    if (!ret)
+        defaultShader = ret = std::make_shared<ShaderProgram>("simple.vert", "simple.frag");
+
+    return ret;
 }
