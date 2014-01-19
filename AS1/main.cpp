@@ -25,7 +25,7 @@ try
     ShaderProgram prgm("simple.vert", "simple.frag");
 
     //load the object
-    Object obj;
+    Object obj("teapot.obj");
 
     //clear to black
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -54,6 +54,7 @@ try
 }
 catch (const char* mesg)
 {
-    std::cerr << mesg << "\nExiting...\n";
+    std::cerr << mesg << "\nPress enter to exit...\n";
+    getchar();
     return EXIT_FAILURE;
 }

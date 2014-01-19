@@ -21,7 +21,11 @@ ShaderProgram::~ShaderProgram()
 
 void ShaderProgram::use()
 {
+    //set this program as current
     glUseProgram(program);
+
+    //set as lines for purposes of this demo
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 GLuint CreateShader(GLenum eShaderType, std::istream &t)

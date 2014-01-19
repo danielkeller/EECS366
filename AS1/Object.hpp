@@ -2,15 +2,16 @@
 #define OBJECT_H
 
 #include "GL/gl_core_3_3.h"
+#include <vector>
 
 class Object
 {
 public:
-    //initialize with default triangle
+    //initialize with default box
     Object();
 
     //initialize from file
-    //Object(std::istream &src)
+    Object(const char* filename);
 
     //clear object's resources
     ~Object();
@@ -25,6 +26,12 @@ private:
     //GL buffer objects for vertex and vertex index data
     GLuint positionBufferObject;
     GLuint indexBufferObject;
+
+    //how many vertex indices we have
+    GLsizei numVertecies;
+
+    //real initialization work
+    void init(const std::vector<GLfloat>& verts, const std::vector<GLint>& indices);
 
     //object is not copyable
     Object(const Object&);

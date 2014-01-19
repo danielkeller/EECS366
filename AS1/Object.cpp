@@ -1,20 +1,66 @@
 #include "Object.hpp"
+#include <fstream>
 
-//default triangle data
-const GLfloat vertexPositions[] = {
+//default box data
+const GLfloat boxPositions[] = {
     0.75f, 0.75f, 0.0f, 1.0f,
     0.75f, -0.75f, 0.0f, 1.0f,
     -0.75f, 0.75f, 0.0f, 1.0f,
     -0.75f, -0.75f, 0.0f, 1.0f,
 };
 
-const GLint vertexIndices[] = {
+const GLint boxIndices[] = {
     0, 1, 2, 1, 2, 3
 };
 
 Object::Object()
 {
-    //create a VAO for the object and bind it as current
+    init(std::vector<GLfloat>(std::begin(boxPositions), std::end(boxPositions)),
+        std::vector<GLint>(std::begin(boxIndices), std::end(boxIndices)));
+}
+
+Object::Object(const char* filename)
+{
+    std::ifstream obj(filename);
+    std::vector<GLfloat> verts;
+    std::vector<GLint> indices;
+
+    if (obj.fail())
+        throw "Cannot open object file";
+        
+    char letter;
+    GLfloat x, y, z;
+    GLint a, b, c;
+
+    while(obj)
+    {
+        obj >> letter;
+        if (letter == 'v')
+        {
+            obj >> x >> y >> z;
+            verts.push_back(x);
+            verts.push_back(y);
+            verts.push_back(z);
+            verts.push_back(1.);
+        }
+        else if (letter == 'f')
+        {
+            obj >> a >> b >> c;
+            //whose brilliant idea was it to make this 1-based
+            indices.push_back(a - 1);
+            indices.push_back(b - 1);
+            indices.push_back(c - 1);
+        }
+    }
+
+    init(verts, indices);
+}
+
+const GLint vertPosnArray = 0;
+void Object::init(const std::vector<GLfloat>& verts, const std::vector<GLint>& indices)
+{
+    //create a vertex array object for the object and bind it as current.
+    //this holds most of the rendering state of the object.
     glGenVertexArrays(1, &vertexArrayObject);
     glBindVertexArray(vertexArrayObject);
 
@@ -24,13 +70,15 @@ Object::Object()
     //bind the newly-created buffer object positionBufferObject as the current GL_ARRAY_BUFFER
     glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
     //upload the data in vertexPositions to the current GL_ARRAY_BUFFER
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verts.size()*sizeof(GLfloat), verts.data(), GL_STATIC_DRAW);
 
-    //enable generic attribute array 0 in the current vertex array object (VAO)
+    //enable generic attribute array vertPosnArray (0) in the current vertex array object (VAO)
     //this is referenced in the vertex shader as "layout(location = 0) in vec4 position;"
-    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(vertPosnArray);
+
     //associate the buffer data bound to GL_ARRAY_BUFFER with the attribute in index 0
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.
+    glVertexAttribPointer(vertPosnArray, 4, GL_FLOAT, GL_FALSE, 0, static_cast<GLvoid*>(0));
 
     //clear the currently bound GL_ARRAY_BUFFER; it has been associated with the VAO by
     //glVertexAttribPointer and GL will remember it
@@ -41,7 +89,11 @@ Object::Object()
 
     //GL_ELEMENT_ARRAY_BUFFER binding is part of the current VAO state, therefore we do not unbind it
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertexIndices), vertexIndices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+        indices.size()*sizeof(GLint), indices.data(),  GL_STATIC_DRAW);
+
+    //remember how many vertecies we have
+    numVertecies = indices.size();
 }
 
 Object::~Object()
@@ -57,10 +109,7 @@ void Object::draw()
     //make the objects VAO current. this brings in all the associated data.
     glBindVertexArray(vertexArrayObject);
 
-    //set as lines for purposes of this demo
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
     //draw verteces according to the index and position buffer objects
     //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, static_cast<void*>(0));
+    glDrawElements(GL_TRIANGLES, numVertecies, GL_UNSIGNED_INT, static_cast<GLvoid*>(0));
 }
