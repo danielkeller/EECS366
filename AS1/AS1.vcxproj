@@ -64,23 +64,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Library Include="glew32.lib" />
     <Library Include="glfw3.lib" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gl_core_3_3.c" />
+    <ClCompile Include="GL\gl_core_3_3.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="simple.frag" />
     <None Include="simple.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gl_core_3_3.h" />
+    <ClInclude Include="GLFW\glfw3.h" />
+    <ClInclude Include="GL\gl_core_3_3.h" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
