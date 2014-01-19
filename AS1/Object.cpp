@@ -1,4 +1,10 @@
 #include "Object.hpp"
+
+#define GLM_FORCE_RADIANS
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/transform.hpp"
+
 #include <fstream>
 
 //default box data
@@ -108,6 +114,19 @@ void Object::draw()
 {
     //make the objects VAO current. this brings in all the associated data.
     glBindVertexArray(vertexArrayObject);
+
+    //find out what the current program is
+    GLint program;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+
+    //find the uniform variable called modelView
+    GLint mvUnif = glGetUniformLocation(program, "modelView");
+
+    //set it to a scaling matrix
+    glm::mat4 sc = glm::perspective(glm::half_pi<float>(), 1.f, .01f, 1000.f)
+                * glm::translate(glm::vec3(0.f, 0.f, -5.f));
+
+    glUniformMatrix4fv(mvUnif, 1, GL_FALSE, glm::value_ptr(sc));
 
     //draw verteces according to the index and position buffer objects
     //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.

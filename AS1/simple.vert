@@ -1,8 +1,10 @@
 #version 330
 
 layout(location = 0) in vec4 position;
+
+uniform mat4x4 modelView;
+
 void main()
 {
-    gl_Position = position;
-    gl_Position.xyz *= .4; //make it fit on the screen
+    gl_Position = modelView * position;
 }

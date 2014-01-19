@@ -78,7 +78,6 @@
     <None Include="simple.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GLFW\glfw3.h" />
     <ClInclude Include="GL\gl_core_3_3.h" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="Shader.hpp" />
