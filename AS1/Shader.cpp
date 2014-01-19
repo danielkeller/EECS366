@@ -5,39 +5,39 @@
 
 ShaderProgram::ShaderProgram(const char* vert, const char* frag)
 {
-	init(std::ifstream(vert), std::ifstream(frag));
+    init(std::ifstream(vert), std::ifstream(frag));
 }
 
 ShaderProgram::ShaderProgram(std::istream &vert, std::istream &frag)
 {
-	init(vert, frag);
+    init(vert, frag);
 }
 
 ShaderProgram::~ShaderProgram()
 {
-	//the program will be deleted once it is no longer part of an active rendering state
-	glDeleteProgram(program);
+    //the program will be deleted once it is no longer part of an active rendering state
+    glDeleteProgram(program);
 }
 
 void ShaderProgram::use()
 {
-	glUseProgram(program);
+    glUseProgram(program);
 }
 
 GLuint CreateShader(GLenum eShaderType, std::istream &t)
 {
-	//read the stream into a string
-	t.seekg(0, std::ios::end);
-	size_t size = static_cast<size_t>(t.tellg());
-	std::string buffer(size, ' ');
-	t.seekg(0);
-	t.read(&buffer[0], size); 
+    //read the stream into a string
+    t.seekg(0, std::ios::end);
+    size_t size = static_cast<size_t>(t.tellg());
+    std::string buffer(size, ' ');
+    t.seekg(0);
+    t.read(&buffer[0], size); 
 
-	//create the shader object
+    //create the shader object
     GLuint shader = glCreateShader(eShaderType);
 
-	//attach and compile the source
-	const GLchar *strFileData = buffer.c_str();
+    //attach and compile the source
+    const GLchar *strFileData = buffer.c_str();
     glShaderSource(shader, 1, &strFileData, NULL);
     glCompileShader(shader);
     
@@ -47,47 +47,47 @@ GLuint CreateShader(GLenum eShaderType, std::istream &t)
     {
         GLint infoLogLength;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-		std::vector<GLchar> infoLog(infoLogLength + 1);
+        std::vector<GLchar> infoLog(infoLogLength + 1);
 
-		//print error message
-		glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog.data());
+        //print error message
+        glGetShaderInfoLog(shader, infoLogLength, NULL, infoLog.data());
         std::cerr << "Compile failure in shader: " << infoLog.data() << "\n";
     }
 
-	return shader;
+    return shader;
 }
 
 void ShaderProgram::init(std::istream &vert, std::istream &frag)
 {
-	//create our empty program object
-	program = glCreateProgram();
+    //create our empty program object
+    program = glCreateProgram();
 
-	GLuint vertShdr = CreateShader(GL_VERTEX_SHADER, vert);
-	GLuint fragShdr = CreateShader(GL_FRAGMENT_SHADER, frag);
+    GLuint vertShdr = CreateShader(GL_VERTEX_SHADER, vert);
+    GLuint fragShdr = CreateShader(GL_FRAGMENT_SHADER, frag);
 
-	//attach vertex and fragment shaders
-	glAttachShader(program, vertShdr);
-	glAttachShader(program, fragShdr);
-	
-	//link the program object
-	glLinkProgram(program);
+    //attach vertex and fragment shaders
+    glAttachShader(program, vertShdr);
+    glAttachShader(program, fragShdr);
+    
+    //link the program object
+    glLinkProgram(program);
 
-	//check for linker errors
-	GLint status;
+    //check for linker errors
+    GLint status;
     glGetProgramiv (program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE)
     {
         GLint infoLogLength;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
-		std::vector<GLchar> infoLog(infoLogLength + 1);
+        std::vector<GLchar> infoLog(infoLogLength + 1);
 
         glGetProgramInfoLog(program, infoLogLength, NULL, infoLog.data());
         std::cerr << "Linker failure: " << infoLog.data() << "\n";
     }
 
-	//shaders are no longer used now that the program is linked
-	glDetachShader(program, vertShdr);
-	glDeleteShader(vertShdr);
-	glDetachShader(program, fragShdr);
-	glDeleteShader(fragShdr);
+    //shaders are no longer used now that the program is linked
+    glDetachShader(program, vertShdr);
+    glDeleteShader(vertShdr);
+    glDetachShader(program, fragShdr);
+    glDeleteShader(fragShdr);
 }

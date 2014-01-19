@@ -16,44 +16,44 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(void)
 try
 {
-	//create the basic window
-	Window w;
-	//add our keyboard input callback
+    //create the basic window
+    Window w;
+    //add our keyboard input callback
     glfwSetKeyCallback(w.window, key_callback);
 
-	//load the shader
-	ShaderProgram prgm("simple.vert", "simple.frag");
+    //load the shader
+    ShaderProgram prgm("simple.vert", "simple.frag");
 
-	//load the object
-	Object obj;
+    //load the object
+    Object obj;
 
-	//clear to black
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    //clear to black
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     
-	//our main loop
-	while (!glfwWindowShouldClose(w.window))
+    //our main loop
+    while (!glfwWindowShouldClose(w.window))
     {
-		//set the GL draw surface to the same size as the window
+        //set the GL draw surface to the same size as the window
         int width, height;
         glfwGetFramebufferSize(w.window, &width, &height);
-		glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+        glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
-		//clear the color buffer
-		glClear(GL_COLOR_BUFFER_BIT);
+        //clear the color buffer
+        glClear(GL_COLOR_BUFFER_BIT);
 
-		//draw the object
-		prgm.use();
-		obj.draw();
+        //draw the object
+        prgm.use();
+        obj.draw();
 
-		//swap draw buffer and visible buffer
+        //swap draw buffer and visible buffer
         glfwSwapBuffers(w.window);
         glfwPollEvents();
     }
     
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
 catch (const char* mesg)
 {
-	std::cerr << mesg << "\nExiting...\n";
-	return EXIT_FAILURE;
+    std::cerr << mesg << "\nExiting...\n";
+    return EXIT_FAILURE;
 }

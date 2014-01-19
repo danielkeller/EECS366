@@ -6,9 +6,9 @@ struct GLFWwindow;
 class Window
 {
 public:
-	//Window initialization and cleanup
-	Window();
-	~Window();
+    //Window initialization and cleanup
+    Window();
+    ~Window();
 
     GLFWwindow* window;
 };
