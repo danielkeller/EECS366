@@ -1,12 +1,14 @@
+#include "stdafx.h"
 #include "Object.hpp"
 #include "Shader.hpp"
 
-#define GLM_FORCE_RADIANS
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/transform.hpp"
-
 #include <fstream>
+
+//shader convention constants
+//name of modelView uniform variable
+const char * const modelViewUniform = "modelView";
+//location of vertex position
+const GLint vertPosnAttrib = 0;
 
 //default box data
 const GLfloat boxPositions[] = {
@@ -68,7 +70,6 @@ Object::Object(const char* filename)
     init(verts, indices);
 }
 
-const GLint vertPosnArray = 0;
 void Object::init(const std::vector<GLfloat>& verts, const std::vector<GLint>& indices)
 {
     //create a vertex array object for the object and bind it as current.
@@ -86,11 +87,11 @@ void Object::init(const std::vector<GLfloat>& verts, const std::vector<GLint>& i
 
     //enable generic attribute array vertPosnArray (0) in the current vertex array object (VAO)
     //this is referenced in the vertex shader as "layout(location = 0) in vec4 position;"
-    glEnableVertexAttribArray(vertPosnArray);
+    glEnableVertexAttribArray(vertPosnAttrib);
 
     //associate the buffer data bound to GL_ARRAY_BUFFER with the attribute in index 0
     //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.
-    glVertexAttribPointer(vertPosnArray, 4, GL_FLOAT, GL_FALSE, 0, static_cast<GLvoid*>(0));
+    glVertexAttribPointer(vertPosnAttrib, 4, GL_FLOAT, GL_FALSE, 0, static_cast<GLvoid*>(0));
 
     //clear the currently bound GL_ARRAY_BUFFER; it has been associated with the VAO by
     //glVertexAttribPointer and GL will remember it
@@ -116,7 +117,7 @@ Object::~Object()
     glDeleteBuffers(1, &indexBufferObject);
 }
 
-void Object::draw()
+void Object::draw(const glm::mat4& transform)
 {
     //make the objects VAO current. this brings in all the associated data.
     glBindVertexArray(vertexArrayObject);
@@ -125,12 +126,10 @@ void Object::draw()
     program->use();
 
     //find the uniform variable called modelView
-    GLint mvUnif = program->GetUniformLocation("modelView");
+    GLint mvUnif = program->GetUniformLocation(modelViewUniform);
 
-    //set it to a scaling matrix
-    glm::mat4 sc = glm::perspective(glm::half_pi<float>(), 1.f, .01f, 1000.f)
-                * glm::translate(glm::vec3(0.f, 0.f, -5.f));
-    glUniformMatrix4fv(mvUnif, 1, GL_FALSE, glm::value_ptr(sc));
+    //set it to the matrix
+    glUniformMatrix4fv(mvUnif, 1, GL_FALSE, glm::value_ptr(transform));
 
     //draw verteces according to the index and position buffer objects
     //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.

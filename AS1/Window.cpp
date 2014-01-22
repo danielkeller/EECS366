@@ -1,6 +1,6 @@
+#include "stdafx.h"
 #include "Window.hpp"
 
-#include "GL/gl_core_3_3.h"
 #include "GLFW/glfw3.h"
 
 #include <iostream>
@@ -43,8 +43,8 @@ Window::Window()
     //glfwSwapInterval(1);
 
     //load GL function pointers
-    if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
-        throw "Error in glLoadGen";
+    //if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
+    //    throw "Error in glLoadGen";
 }
 
 Window::~Window()

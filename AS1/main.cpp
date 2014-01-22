@@ -1,15 +1,27 @@
+#include "stdafx.h"
 #include "Object.hpp"
 #include "Window.hpp"
 
-#include "GL/gl_core_3_3.h"
 #include "GLFW/glfw3.h"
 
 #include <iostream>
 
+bool perspective = true;
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (action != GLFW_PRESS)
+        return;
+    switch (key)
+    {
+    case GLFW_KEY_Q:
+    case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(window, GL_TRUE);
+        break;
+    case GLFW_KEY_P:
+        perspective = !perspective;
+        break;
+    }
 }
 
 int main(void)
@@ -34,11 +46,20 @@ try
         glfwGetFramebufferSize(w.window, &width, &height);
         glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
+        //set the perspective matrix
+        glm::mat4 perspMat;
+        if (perspective)
+            perspMat = glm::perspective(glm::half_pi<float>(), (float)width / height, .01f, 100.f);
+        else
+            perspMat = glm::ortho(-1.f, 1.f, -1.f, 1.f);
+
+        glm::mat4 view = glm::translate(glm::vec3(0.f, 0.f, -4.f));
+
         //clear the color buffer
         glClear(GL_COLOR_BUFFER_BIT);
 
         //draw the object
-        obj.draw();
+        obj.draw(perspMat * view);
 
         //swap draw buffer and visible buffer
         glfwSwapBuffers(w.window);

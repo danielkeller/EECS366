@@ -1,7 +1,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "GL/gl_core_3_3.h"
+#include "stdafx.h"
+
 #include <vector>
 #include <memory>
 
@@ -20,7 +21,7 @@ public:
     ~Object();
 
     //Draw object to screen
-    void draw();
+    void draw(const glm::mat4& transform);
 
 private:
     //the GL vertex array object assocated with this object
@@ -33,7 +34,8 @@ private:
     //how many vertex indices we have
     GLsizei numVertecies;
 
-    //our shader program
+    //our shader program. the convention here is that the vertex position attribute is in
+    //location 0, and the modelview uniform is 'mat4x4 modelView'
     std::shared_ptr<ShaderProgram> program;
 
     //real initialization work

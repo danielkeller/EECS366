@@ -1,8 +1,9 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include "stdafx.h"
+
 #include <istream>
-#include "GL/gl_core_3_3.h"
 
 class ShaderProgram
 {
