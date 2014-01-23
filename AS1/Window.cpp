@@ -43,8 +43,8 @@ Window::Window()
     //glfwSwapInterval(1);
 
     //load GL function pointers
-    //if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
-    //    throw "Error in glLoadGen";
+    if(ogl_LoadFunctions() == ogl_LOAD_FAILED)
+        throw "Error in glLoadGen";
 }
 
 Window::~Window()
