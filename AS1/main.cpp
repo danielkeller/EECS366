@@ -5,6 +5,7 @@
 #include "GLFW/glfw3.h"
 
 #include <iostream>
+#include <chrono>
 
 bool perspective = true;
 
@@ -38,6 +39,8 @@ try
     //clear to black
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     
+    auto then = std::chrono::system_clock::now();
+
     //our main loop
     while (!glfwWindowShouldClose(w.window))
     {
@@ -46,6 +49,17 @@ try
         glfwGetFramebufferSize(w.window, &width, &height);
         glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
+        float ang = (float)std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now() - then).count() / 1000.f;
+
+        glm::mat4 rotMat = glm::rotate(ang, glm::vec3(0.f, 1.f, 0.f));
+
+        //set the camera matrix
+        glm::mat4 cameraMat = glm::lookAt(
+            glm::vec3(0.f, 0.f, 5.f),
+            glm::vec3(),
+            glm::vec3(0.f, 1.f, 0.f));
+
         //set the perspective matrix
         glm::mat4 perspMat;
         if (perspective)
@@ -53,13 +67,11 @@ try
         else
             perspMat = glm::ortho(-1.f, 1.f, -1.f, 1.f);
 
-        glm::mat4 view = glm::translate(glm::vec3(0.f, 0.f, -4.f));
-
         //clear the color buffer
         glClear(GL_COLOR_BUFFER_BIT);
 
         //draw the object
-        obj.draw(perspMat * view);
+        obj.draw(perspMat * cameraMat * rotMat);
 
         //swap draw buffer and visible buffer
         glfwSwapBuffers(w.window);
