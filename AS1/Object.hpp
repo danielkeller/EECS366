@@ -2,11 +2,9 @@
 #define OBJECT_H
 
 #include "stdafx.h"
+#include "Shader.hpp"
 
 #include <vector>
-#include <memory>
-
-class ShaderProgram;
 
 class Object
 {
@@ -36,7 +34,7 @@ private:
 
     //our shader program. the convention here is that the vertex position attribute is in
     //location 0, and the modelview uniform is 'mat4x4 modelView'
-    std::shared_ptr<ShaderProgram> program;
+    ShaderProgram program;
 
     //real initialization work
     void init(const std::vector<GLfloat>& verts, const std::vector<GLint>& indices);

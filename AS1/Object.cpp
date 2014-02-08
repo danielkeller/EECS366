@@ -22,10 +22,8 @@ const GLint boxIndices[] = {
     0, 1, 2, 1, 2, 3
 };
 
-std::shared_ptr<ShaderProgram> getDefaultShader();
-
 Object::Object()
-    : program(getDefaultShader())
+    : program("simple.vert", "simple.frag")
 {
     //use default box
     init(std::vector<GLfloat>(std::begin(boxPositions), std::end(boxPositions)),
@@ -33,7 +31,7 @@ Object::Object()
 }
 
 Object::Object(const char* filename)
-    : program(getDefaultShader())
+    : program("simple.vert", "simple.frag")
 {
     std::ifstream obj(filename);
     std::vector<GLfloat> verts;
@@ -123,10 +121,10 @@ void Object::draw(const glm::mat4& transform)
     glBindVertexArray(vertexArrayObject);
 
     //set our shader current
-    program->use();
+    program.use();
 
     //find the uniform variable called modelView
-    GLint mvUnif = program->GetUniformLocation(modelViewUniform);
+    GLint mvUnif = program.GetUniformLocation(modelViewUniform);
 
     //set it to the matrix
     glUniformMatrix4fv(mvUnif, 1, GL_FALSE, glm::value_ptr(transform));
@@ -134,16 +132,4 @@ void Object::draw(const glm::mat4& transform)
     //draw verteces according to the index and position buffer objects
     //the final argument to this call is an integer offset, cast to pointer type. don't ask me why.
     glDrawElements(GL_TRIANGLES, numVertecies, GL_UNSIGNED_INT, static_cast<GLvoid*>(0));
-}
-
-//a shared singleton. The object exists while there is at least one user.
-std::weak_ptr<ShaderProgram> defaultShader;
-std::shared_ptr<ShaderProgram> getDefaultShader()
-{
-    std::shared_ptr<ShaderProgram> ret = defaultShader.lock();
-
-    if (!ret)
-        defaultShader = ret = std::make_shared<ShaderProgram>("simple.vert", "simple.frag");
-
-    return ret;
 }

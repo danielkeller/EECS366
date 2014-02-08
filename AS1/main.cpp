@@ -39,7 +39,12 @@ try
     //clear to black
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     
-    auto then = std::chrono::system_clock::now();
+    //auto then = std::chrono::system_clock::now();
+
+    double oldX, oldY;
+    glfwGetCursorPos(w.window, &oldX, &oldY);
+
+    glm::mat4 rotMat;
 
     //our main loop
     while (!glfwWindowShouldClose(w.window))
@@ -49,10 +54,16 @@ try
         glfwGetFramebufferSize(w.window, &width, &height);
         glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 
-        float ang = (float)std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now() - then).count() / 1000.f;
+        //float ang = (float)std::chrono::duration_cast<std::chrono::milliseconds>(
+        //    std::chrono::system_clock::now() - then).count() / 1000.f;
+        double curX, curY;
+        glfwGetCursorPos(w.window, &curX, &curY);
 
-        glm::mat4 rotMat = glm::rotate(ang, glm::vec3(0.f, 1.f, 0.f));
+        if (glfwGetMouseButton(w.window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            rotMat *= glm::rotate(float(curX - oldX)/float(width), glm::vec3(0.f, 1.f, 0.f));
+        }
+        oldX = curX, oldY = curY;
 
         //set the camera matrix
         glm::mat4 cameraMat = glm::lookAt(
